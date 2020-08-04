@@ -4,18 +4,18 @@
 
 ---
 
+</div>
 <span>
 This readme is a compilation of all the question asked during my recent COVID-19 job hunt. I've also attached a list of resources that I'd referred for the preparations.
 <br/>
 The questions are divided into following sections.
-<ul>
+<ul align="left">>
 	<li>JS</li>
 	<li>Coding</li>
 	<li>Assignments</li>
 	<li>Miscellaneous</li>
 </ul>
 </span>
-</div>
 
 ### JS
 
