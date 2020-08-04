@@ -942,3 +942,6 @@ The highlighted card (via keyboard/mouse) will scroll into view
 9) What are higher order component in react.
 10) How does connect function work in redux.
 22) What are pure components in React.
+
+### Resources
+[link](https://github.com/devAbhijeet/learning-resources)
