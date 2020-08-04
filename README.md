@@ -1,9 +1,6 @@
 <div align="center">
   <img height="60" src="https://raw.githubusercontent.com/devAbhijeet/devAbhijeet/master/assets/javascript.svg"> 
   <h1>Interview questions for front end</h1>
-
----
-
 </div>
 <span>
 This readme is a compilation of all the question asked during my recent COVID-19 job hunt. I've also attached a list of resources that I'd referred for the preparations.
