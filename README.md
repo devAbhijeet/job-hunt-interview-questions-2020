@@ -369,7 +369,37 @@ debounce(apiCall, 3000)
 
 ---
 
-9) Design API polling mechanism. The API is called after a fixed interval. The API is a stock API that fetches the latest price of stock. Upon fetching the results, render the UI.
+9) Implement throtlling function
+
+<details><summary><b>Answer</b></summary>
+<p>
+
+```javascript
+const throttle = (callback, interval) => {
+  let timerId;
+  let allowEvents = true;
+
+  return function() {
+    let context = this;
+    let args = arguments;
+    
+    if (allowEvents) {
+      callback.apply(context, args)
+      allowEvents = false;
+      timerId = setTimeOut(function(){
+        allowEvents = true
+      }, interval)
+    }
+  }
+}
+```
+
+</p>
+</details>
+
+---
+
+10) Design API polling mechanism. The API is called after a fixed interval. The API is a stock API that fetches the latest price of stock. Upon fetching the results, render the UI.
 
 The question demands the design aspect of the solution and not the code. It was open ended question.
 
@@ -381,7 +411,175 @@ The question demands the design aspect of the solution and not the code. It was 
 setInterval=>Endpoint=>Render
 
 //with the inversion of control
-//Endpoint=>Render=>setTimeout=>Endpoint=>Render=>SetTimeout...
+Endpoint=>Render=>setTimeout=>Endpoint=>Render=>SetTimeout...
+```
+
+</p>
+</details>
+
+---
+
+11) Convert class based inheritance code given below to ES5 code.
+```javascript
+class Parent(name){
+  constructor(name) {
+    this.name=name
+  }
+
+  getName(){return this.name}
+}
+
+class Children extends Parent {
+  constructor(props){
+    super(props)
+  }
+}
+```
+
+<details><summary><b>Answer</b></summary>
+<p>
+
+```javascript
+function Parent(name) {
+  this.name = name
+}
+
+Parent.prototype.getName = function() {
+  return this.name
+}
+
+function Children(name){
+  Parent.call(this, name)
+}
+ 
+Children.prototype = new Parent()
+```
+
+</p>
+</details>
+
+---
+
+12) What does following code evaluates to?
+```javascript
+//Q.1
+var x = 1;
+var y = x;
+
+x = 0;
+console.log(x, y);
+
+//Q.2
+var x = [1];
+var y = x;
+
+x = [];
+console.log(x,y);
+
+//Q.3
+function Abc() { console.log(this); };
+Abc()
+new Abc();
+
+//Q.4
+var x = 1;
+var obj = {
+  x: 2,
+  getX: function () {
+    return console.log(this.x);
+  }
+};
+
+obj.getX()
+let a = obj.getX
+console.log(a)
+
+//Q.5
+//How to get the a to log 2 in the above code
+
+//Q.6
+console.log("A");
+setTimeout(() => console.log("B"), 0);
+setTimeout(() => console.log("C"), 0);
+console.log("D");
+
+//Q.7
+setTimeout(function() {
+  console.log("A");
+}, 0);
+Promise.resolve().then(function() {
+  console.log("B");
+}).then(function() {
+  console.log("C");
+});
+
+console.log("D");
+
+//Q.8
+let obj1 = {
+  a:1,
+  b:2
+}
+
+function mutate(obj) {
+  obj = {a:4, c:6}
+}
+
+console.log(obj1)
+mutate(obj1)
+console.log(obj1)
+```
+
+<details><summary><b>Answer</b></summary>
+<p>
+
+```javascript
+//A.1
+0 1
+
+//A.2
+[] [1]
+
+//A.3
+window object is logged
+
+//A.4
+logs 2 and 1
+
+//A.5
+a.call(obj);
+
+//A.6
+A, D, B , C
+
+//A.7
+D, B, C, A
+
+//A.8
+{ a: 1, b: 2 }
+{ a: 1, b: 2 }
+```
+
+</p>
+</details>
+
+---
+
+13) Given an array of numbers implement the following
+```javascript
+const list = [1,2,3,4,5,6,7,8]
+const filteredArray = list.filter(between(3, 6)) // [4,5]
+```
+
+<details><summary><b>Answer</b></summary>
+<p>
+
+```javascript
+function between(start, end) {
+  return function (value,index) {
+    return value>start && value<end
+  }
+}
 ```
 
 </p>
@@ -820,6 +1018,270 @@ console.log(flattenedObj);
 
 ---
 
+13) Given an array of object containing list of employee data such that each employee has list of reportee. Use this information to construct a hirerachy of employees.
+
+<details><summary><b>Answer</b></summary>
+<p>
+
+```javascript
+const employeesData = [{
+  id: 2,
+  name: 'Abhishek (CTO)',
+  reportees: [6] 
+}, {
+  id: 3,
+  name: 'Abhiram (COO)',
+  reportees: []
+}, {
+  id: 6,
+  name: 'Abhimanyu (Engineering Manager)',
+  reportees: [9] 
+}, {
+  id: 9,
+  name: 'Abhinav (Senior Engineer)',
+  reportees: []
+}, {
+  id: 10,
+  name: 'Abhijeet (CEO)',
+  reportees: [2, 3],
+}];
+
+/*
+A (CEO)
+----B (CTO)
+--------D (Engineering Manager)
+------------E (Senior Software Engineer)
+----C (COO)
+*/
+
+const findCeo = (currentEmp) => {
+  let parentEmployee = employeesData.filter(emp => emp.reportees.indexOf(currentEmp.id) > -1)
+  if (parentEmployee && parentEmployee.length > 0) {
+    return findCeo(parentEmployee[0])
+  } else {
+    return currentEmp
+  }
+}
+
+const logHierarchy = (currentEmp, indent) => {
+  console.log("-".repeat(indent) + currentEmp.name)
+  indent+=4;
+  for(let i=0;i <currentEmp.reportees.length;i++) {
+    let employee = employeesData.filter(emp => emp.id === currentEmp.reportees[i])
+    logHierarchy(employee[0], indent)
+  }
+}
+
+const traverse = (employee) => {
+  let ceo = findCeo(employee)
+  logHierarchy(ceo, 0)
+}
+
+traverse(employeesData[0])
+```
+
+</p>
+</details>
+
+---
+
+14) Print a given matrix in spiral form
+```javascript
+const inputMatrix = [
+  [1, 2, 3, 4,  5],
+  [6, 7, 8, 9, 10],
+  [11,12,13,14,15],
+  [16,17,18,19,20],
+]
+
+const exprectOutput = [1,2,3,4,5,10,15,20,19,18,17,16,11,6,7,8,9,14,13,12]
+```
+
+<details><summary><b>Answer</b></summary>
+<p>
+
+```javascript
+function spiralParser(inputMatrix){
+  const output = [];
+  let rows = inputMatrix.length;
+  let cols = rows > 0 ? inputMatrix[0].length : 0;
+  
+  //sinleEmptyRow => Edge case 1 //[]
+  if (rows === 0) {
+    return []
+  }
+  
+  if (rows === 1) {
+    //sinleElementRowNoCol => Edge case 2 //[[]]
+    if (cols === 0) {
+      return []
+    } else if (cols === 1){
+      //sinleElementRow => Edge case 3 //[[1]]
+      output.push(inputMatrix[0][0])
+      return output 
+    }
+  }
+  
+  let top = 0;
+  let bottom = rows - 1;
+  let left = 0;
+  let right = cols - 1;
+  let direction = 0;
+  //0 => left->right
+  //1 => top->bottom
+  //2 => right->left
+  //3 => bottom->top
+  
+  while(left <= right && top <= bottom) {
+    if(direction === 0) {
+      //left->right
+      for (let i=left; i<=right;i++) {
+        output.push(inputMatrix[top][i])
+      }
+      top++;
+    } else if (direction === 1) {
+      //top->bottom
+      for (let i=top; i<=bottom;i++) {
+        output.push(inputMatrix[i][right])
+      }
+      right--
+    } else if (direction === 2) {
+      //right->left
+      for (let i=right; i>=left;i--) {
+        output.push(inputMatrix[bottom][i])
+      }
+      bottom--
+    } else if (direction === 3) {
+      //bottom->top
+      for (let i=bottom; i>=top;i--) {
+        output.push(inputMatrix[i][left])
+      }
+      left++
+    }
+    direction = (direction + 1) % 4
+  }
+  return output;
+}
+
+console.log(spiralParser(inputMatrix2))
+```
+
+</p>
+</details>
+
+---
+
+15) Find maximum consecutive repeating char in a give string.
+```javascript
+let str = 'bbbaaaaccadd'; //max repeating char is a with count 4
+```
+
+<details><summary><b>Answer</b></summary>
+<p>
+
+```javascript
+//sudo code
+maxNow = if input string length is 1 or greater than 1 ? 1 : 0
+maxOverall = if input string length is 1 or greater than 1 ? 1 : 0
+
+for char in inputString starting from index 1
+  if char equals prevChar
+    maxNow++
+    maxOverall = max(maxOverall, maxNow)
+  else if char not equals prevChar    
+    maxNow = 1
+
+```
+
+</p>
+</details>
+
+---
+
+16) Given a input array of varying length, segregate all the 2's at the end of the array.
+```javascript
+let inputArr = [2,9,1,5,2,3,1,2,7,4,3,8,29,2,4,6,54,32,2,100]
+//ouput => [9,1,5,3,1,7,4,3,8,29,4,6,54,32,100,2,2,2,2,2]
+```
+
+<details><summary><b>Answer</b></summary>
+<p>
+
+```javascript
+let slowRunner = 0
+
+for (let fastRunner=0;fastRunner<arr.length;fastRunner++) {
+  if (arr[fastRunner]!==2 && arr[slow] == 2) {
+    [arr[fastRunner], arr[slow]] = [arr[slow], arr[fastRunner]]
+    slowRunner++
+  }
+}
+```
+
+</p>
+</details>
+
+---
+
+17) Reverse a linked list
+```javascript
+//Input = 1 -> 2 -> 3 -> 4 -> 5 -> 6
+//Output = 1 <- 2 <- 3 <- 4 <- 5 <- 6
+```
+
+
+<details><summary><b>Answer</b></summary>
+<p>
+
+```javascript
+//sudo code
+let current = head
+let prev = null
+let next = null
+
+while(current) {
+  next = current.next
+  current.next = prev
+  prev = current
+  current = next
+}
+
+```
+
+</p>
+</details>
+
+---
+
+18) preorder tree traversal using iteration (No recurssion)
+
+<details><summary><b>Answer</b></summary>
+<p>
+
+```javascript
+//sudo code
+const preorder = (root) => {
+  let stack = []
+  stack.push(root)
+
+  while(there is element in stack) {
+    let current = stack.pop()
+    console.log(current.value)
+    if (current.right) {
+      stack.push(current.right)
+    }
+    if (current.left) {
+      stack.push(current.left)
+    }
+  }
+}
+```
+
+</p>
+</details>
+
+---
+
 ### Assignments
 
 1) Design a parking lot system with following requirements:
@@ -941,7 +1403,13 @@ The highlighted card (via keyboard/mouse) will scroll into view
 8) What is CORS.
 9) What are higher order component in react.
 10) How does connect function work in redux.
-22) What are pure components in React.
+11) What are pure components in React.
+12) Difference between __proto__ and prototype
+13) Difference between inline vs inline block vs block
+14) Difference between flex and grid layout
+15) Different positioning system in CSS
+16) Specificity and selectors priority in CSS
+17) Difference between display none vs visibility hidden vs opacity
 
 ### Resources
 [link](https://github.com/devAbhijeet/learning-resources)
