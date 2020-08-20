@@ -1106,17 +1106,17 @@ function spiralParser(inputMatrix){
   let rows = inputMatrix.length;
   let cols = rows > 0 ? inputMatrix[0].length : 0;
   
-  //sinleEmptyRow => Edge case 1 //[]
+  //singleEmptyRow => Edge case 1 //[]
   if (rows === 0) {
     return []
   }
   
   if (rows === 1) {
-    //sinleElementRowNoCol => Edge case 2 //[[]]
+    //singleElementRowNoCol => Edge case 2 //[[]]
     if (cols === 0) {
       return []
     } else if (cols === 1){
-      //sinleElementRow => Edge case 3 //[[1]]
+      //singleElementRow => Edge case 3 //[[1]]
       output.push(inputMatrix[0][0])
       return output 
     }
